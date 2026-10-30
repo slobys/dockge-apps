@@ -26,6 +26,10 @@
                         </div>
                     </div>
 
+                    <router-link to="/apps" class="btn btn-outline-primary mb-3">
+                        <font-awesome-icon icon="warehouse" class="me-1" /> {{ $t("appCenter") }} · 一键部署
+                    </router-link>
+
                     <!-- Docker Run -->
                     <h2 class="mb-3">{{ $t("Docker Run") }}</h2>
                     <div class="mb-3">

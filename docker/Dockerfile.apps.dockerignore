@@ -1,0 +1,11 @@
+# Keep application source available to the frontend build stage.
+.git
+.github
+node_modules
+frontend-dist
+data
+stacks
+tmp
+/private
+.env
+*.log

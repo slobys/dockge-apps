@@ -1,12 +1,12 @@
-name: Node.js CI - Dockge
+name: Dockge Apps CI
 
 on:
   push:
-    branches: [master]
+    branches: [main]
     paths-ignore:
       - '*.md'
   pull_request:
-    branches: [master]
+    branches: [main]
     paths-ignore:
       - '*.md'
 
@@ -18,7 +18,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-latest]
         node: [22] # Can be changed
     runs-on: ${{ matrix.os }}
     timeout-minutes: 30
@@ -36,19 +36,25 @@ jobs:
           persist-credentials: false
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{matrix.node}}
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Lint
         run: npm run lint
+
+      - name: Catalog tests
+        run: npm run test:catalog
 
       - name: Check Typescript
         run: npm run check-ts
 
       - name: Build
         run: npm run build:frontend
+
+      - name: Docker Compose syntax
+        run: docker compose -f compose.apps.yaml config -q
       # more things can be add later like tests etc..

@@ -8,6 +8,7 @@
     "signedInDisp": "Signed in as {0}",
     "signedInDispDisabled": "Auth Disabled.",
     "home": "Home",
+    "appCenter": "App Center",
     "console": "Console",
     "registry": "Registry",
     "compose": "Compose",

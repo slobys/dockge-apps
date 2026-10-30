@@ -3,10 +3,27 @@ import { DockgeServer } from "../dockge-server";
 import { callbackError, callbackResult, checkLogin, DockgeSocket, ValidationError } from "../util-server";
 import { Stack } from "../stack";
 import { AgentSocket } from "../../common/agent-socket";
+import { installCatalogApp } from "../app-installer";
 
 export class DockerSocketHandler extends AgentSocketHandler {
     create(socket : DockgeSocket, server : DockgeServer, agentSocket : AgentSocket) {
         // Do not call super.create()
+
+        // Pre-approved, authenticated one-click application deployments.
+        agentSocket.on("installCatalogApp", async (request: unknown, callback: unknown) => {
+            try {
+                checkLogin(socket);
+                const installed = await installCatalogApp(server, socket, request);
+                callbackResult({
+                    ok: true,
+                    msg: "Deployed",
+                    msgi18n: true,
+                    ...installed,
+                }, callback);
+            } catch (error) {
+                callbackError(error, callback);
+            }
+        });
 
         agentSocket.on("deployStack", async (name : unknown, composeYAML : unknown, composeENV : unknown, isAdd : unknown, callback) => {
             try {

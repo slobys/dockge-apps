@@ -1,11 +1,11 @@
 import { log } from "./log";
-import compareVersions from "compare-versions";
 import packageJSON from "../package.json";
 import { Settings } from "./settings";
 
 // How much time in ms to wait between update checks
 const UPDATE_CHECKER_INTERVAL_MS = 1000 * 60 * 60 * 48;
-const CHECK_URL = "https://dockge.kuma.pet/version";
+// Check this fork only. An upstream release should not recommend installing the non-fork image.
+const CHECK_URL = "https://api.github.com/repos/slobys/dockge-apps/releases/latest";
 
 class CheckVersion {
     version = packageJSON.version;
@@ -24,22 +24,10 @@ class CheckVersion {
                 const res = await fetch(CHECK_URL);
                 const data = await res.json();
 
-                // For debug
-                if (process.env.TEST_CHECK_VERSION === "1") {
-                    data.slow = "1000.0.0";
-                }
-
-                const checkBeta = await Settings.get("checkBeta");
-
-                if (checkBeta && data.beta) {
-                    if (compareVersions.compare(data.beta, data.slow, ">")) {
-                        this.latestVersion = data.beta;
-                        return;
-                    }
-                }
-
-                if (data.slow) {
-                    this.latestVersion = data.slow;
+                // No releases published yet: GitHub returns 404, so no badge is shown.
+                const tag = data.tag_name;
+                if (typeof tag === "string" && /^v?\d+\.\d+\.\d+(?:-[a-zA-Z0-9.-]+)?$/.test(tag)) {
+                    this.latestVersion = tag.replace(/^v/, "");
                 }
 
             } catch (_) {

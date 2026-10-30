@@ -1,0 +1,18 @@
+# Dockge Apps (community fork) - build this repository's code, not the upstream image.
+# For a custom stack path, use the SAME absolute path on both sides:
+# DOCKGE_STACKS_DIR=/volume1/docker/stacks docker compose -f compose.apps.yaml up -d --build
+services:
+  dockge-apps:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.apps
+    image: dockge-apps:local
+    restart: unless-stopped
+    ports:
+      - "${DOCKGE_HTTP_PORT:-5001}:5001"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./data:/app/data
+      - ${DOCKGE_STACKS_DIR:-/opt/stacks}:${DOCKGE_STACKS_DIR:-/opt/stacks}
+    environment:
+      DOCKGE_STACKS_DIR: ${DOCKGE_STACKS_DIR:-/opt/stacks}

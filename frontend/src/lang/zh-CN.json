@@ -8,6 +8,7 @@
     "signedInDisp": "当前用户： {0}",
     "signedInDispDisabled": "已禁用身份验证。",
     "home": "主页",
+    "appCenter": "应用中心",
     "console": "终端",
     "registry": "镜像仓库",
     "compose": "Compose",

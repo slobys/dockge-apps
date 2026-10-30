@@ -1,3 +1,60 @@
+# Dockge Apps · Dockge 应用中心二开版
+
+> **独立社区衍生版（非 Dockge 官方版本）**，基于 [louislam/dockge](https://github.com/louislam/dockge)，遵守原项目 MIT 许可证并保留作者署名。原始 Dockge 项目仍由 Louis Lam 维护。
+>
+> **请使用下方 `compose.apps.yaml` 进行安装。原版 `compose.yaml` 仍引用官方镜像，不包含本仓库的应用中心功能。**
+
+## 功能亮点
+
+- **应用中心**：无需复制粘贴 Docker Compose，面板中直接安装 [Nginx Proxy Manager](https://github.com/NginxProxyManager/nginx-proxy-manager)、[IT-Tools](https://github.com/CorentinTh/it-tools)、[MyIP](https://github.com/jason5ng32/MyIP)。
+- **独立端口设置**：Nginx Proxy Manager 的 HTTP/管理/HTTPS 三个宿主机端口均可配置；IT-Tools 与 MyIP 也支持端口修改。
+- **安全部署**：登录鉴权、限定官方镜像与模板、端口和 Stack 名称校验、Docker 已发布端口冲突检查、安装互斥；不会覆盖已有 Stack。
+- **沿用 Dockge 管理**：安装后自动进入对应 Stack，可继续通过 Compose 编辑器管理、更新或停止。
+- **MyIP 提示**：通过真实域名访问时需要填写 `ALLOWED_DOMAINS`；MaxMind 地理位置与 ASN 功能需要用户自行申请免费的账户凭据，未配置可能返回 503。
+
+## 快速部署（Linux / NAS）
+
+要求 Docker Engine、Docker Compose V2、足够的镜像拉取空间。Docker 管理权限非常高，**只应在可信内网或受保护的反向代理后开放 Dockge 管理端口**。
+
+```bash
+git clone https://github.com/slobys/dockge-apps.git
+cd dockge-apps
+mkdir -p data
+docker compose -f compose.apps.yaml up -d --build
+```
+
+浏览器打开 `http://服务器IP:5001`，完成管理员设置，点击顶部的 **应用中心** → 选择应用 → 设置端口 → **确认并安装**。首次拉取镜像需要联网，不会自动对公网开放路由器或云防火墙。
+
+如需自定义 Dockge 面板及 stacks 目录，可在 `docker compose` 前设置（**Stack 宿主机和容器路径必须相同且为绝对路径**）：
+
+```bash
+DOCKGE_HTTP_PORT=5002 DOCKGE_STACKS_DIR=/opt/stacks \
+  docker compose -f compose.apps.yaml up -d --build
+```
+
+**已有 Dockge 用户：** 部署前备份旧版数据目录以及 `/opt/stacks`，并在测试时使用其他面板端口，避免两个 Dockge 实例共同操作同一 Stack。不要在已有生产环境直接覆盖或重新创建原容器。
+
+**端口说明：** 自定义端口是「宿主机端口:容器端口」，例如 NPM 管理页面 `8181:81` 则从 `http://服务器IP:8181` 访问。应用中心可检测运行中 Docker 容器已发布端口；其他宿主机进程、防火墙和部署瞬间的外部竞争仍可能造成启动失败。遇到失败，生成的 Compose 会保留，可在 Stack 页面调整并重试。
+
+**MyIP 配置：** 若需要完整 MaxMind 查询，在创建后打开对应 Stack 编辑器，按 [MyIP 官方指南](https://docs.ipcheck.ing/developer/getting-started/maxmind-setup) 配置 `MAXMIND_ACCOUNT_ID` 和 `MAXMIND_LICENSE_KEY`；域名访问时设置 `ALLOWED_DOMAINS`。不建议把凭据提交到 GitHub。
+
+## 开发与验证
+
+```bash
+npm ci
+npm run test:catalog
+npm run check-ts
+npm run lint
+npm run build:frontend
+docker compose -f compose.apps.yaml config
+```
+
+应用中心逻辑位于 `common/app-catalog.ts`、`backend/app-catalog.ts`、`backend/app-installer.ts` 与 `frontend/src/pages/AppCenter.vue`。单元测试验证模板、输入限制与 Docker 端口解析；单元测试不代表已经在真实 NAS 上完成所有镜像的安装验收。
+
+---
+
+## 原版 Dockge 介绍与参考文档（以下为上游资料，安装命令请以本页为准）
+
 <div align="center" width="100%">
     <img src="./frontend/public/icon.svg" width="128" alt="" />
 </div>

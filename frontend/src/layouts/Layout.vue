@@ -13,10 +13,10 @@
         <header v-if="! $root.isMobile" class="d-flex flex-wrap justify-content-center py-3 mb-3 border-bottom">
             <router-link to="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-dark text-decoration-none">
                 <object class="bi me-2 ms-4" width="40" height="40" data="/icon.svg" />
-                <span class="fs-4 title">Dockge</span>
+                <span class="fs-4 title">Dockge Apps</span>
             </router-link>
 
-            <a v-if="hasNewVersion" target="_blank" href="https://github.com/louislam/dockge/releases" class="btn btn-warning me-3">
+            <a v-if="hasNewVersion" target="_blank" href="https://github.com/slobys/dockge-apps/releases" class="btn btn-warning me-3">
                 <font-awesome-icon icon="arrow-alt-circle-up" /> {{ $t("newUpdate") }}
             </a>
 
@@ -24,6 +24,12 @@
                 <li v-if="$root.loggedIn" class="nav-item me-2">
                     <router-link to="/" class="nav-link">
                         <font-awesome-icon icon="home" /> {{ $t("home") }}
+                    </router-link>
+                </li>
+
+                <li v-if="$root.loggedIn" class="nav-item me-2">
+                    <router-link to="/apps" class="nav-link">
+                        <font-awesome-icon icon="warehouse" /> {{ $t("appCenter") }}
                     </router-link>
                 </li>
 
@@ -83,6 +89,13 @@
                 </li>
             </ul>
         </header>
+
+        <nav v-if="$root.isMobile && $root.loggedIn" class="mobile-app-nav mb-3" aria-label="Dockge navigation">
+            <router-link to="/" class="btn btn-normal btn-sm">{{ $t("home") }}</router-link>
+            <router-link to="/apps" class="btn btn-normal btn-sm">{{ $t("appCenter") }}</router-link>
+            <router-link to="/compose" class="btn btn-normal btn-sm">{{ $t("compose") }}</router-link>
+            <router-link to="/settings/general" class="btn btn-normal btn-sm">{{ $t("Settings") }}</router-link>
+        </nav>
 
         <main>
             <div v-if="$root.socketIO.connecting" class="container mt-5">
@@ -157,6 +170,21 @@ export default {
 
 <style lang="scss" scoped>
 @import "../styles/vars.scss";
+
+.mobile-app-nav {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    overflow-x: auto;
+    padding: 10px 12px 2px;
+}
+.mobile-app-nav .btn {
+    flex: 0 0 auto;
+}
+.mobile-app-nav .router-link-exact-active {
+    color: $primary;
+    font-weight: 700;
+}
 
 .nav-link {
     &.status-page {
